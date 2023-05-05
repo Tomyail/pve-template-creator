@@ -1,0 +1,38 @@
+[
+  {
+    "name": "ubuntu-22-04",
+    "path": "https://cloud-images.ubuntu.com/minimal/releases/jammy/release/ubuntu-22.04-minimal-cloudimg-amd64.img",
+    "checksum": "https://cloud-images.ubuntu.com/minimal/releases/jammy/release/SHA256SUMS",
+    "checksum_type": "sha256sum"
+  },
+  {
+    "name": "ubuntu-20-04",
+    "path": "https://cloud-images.ubuntu.com/minimal/releases/focal/release/ubuntu-20.04-minimal-cloudimg-amd64.img",
+    "checksum": "https://cloud-images.ubuntu.com/minimal/releases/focal/release/SHA256SUMS",
+    "checksum_type": "sha256sum"
+  },
+  {
+    "name": "ubuntu-18-04",
+    "path": "https://cloud-images.ubuntu.com/minimal/releases/bionic/release/ubuntu-18.04-minimal-cloudimg-amd64.img",
+    "checksum": "https://cloud-images.ubuntu.com/minimal/releases/bionic/release/SHA256SUMS",
+    "checksum_type": "sha256sum"
+  },
+  {
+    "name": "debian-11",
+    "path": "https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2",
+    "checksum": "https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS",
+    "checksum_type": "sha512sum"
+  },
+  {
+    "name": "debian-10",
+    "path": "https://cloud.debian.org/images/cloud/buster/latest/debian-10-generic-amd64.qcow2",
+    "checksum": "https://cloud.debian.org/images/cloud/buster/latest/SHA512SUMS",
+    "checksum_type": "sha512sum"
+  },
+  {
+    "name": "centos-7",
+    "path": "https://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2",
+    "checksum": "https://cloud.centos.org/centos/7/images/sha256sum.txt",
+    "checksum_type": "sha256sum"
+  }
+]
