@@ -1,19 +1,38 @@
 #!/bin/bash
 set -e
 
-# Default values
-DEFAULT_VM_ID=1000
-DEFAULT_VM_CORES=2
-DEFAULT_VM_MEM=1024
-DEFAULT_VM_DISK="5G"
-DEFAULT_STORAGE="pool"
-DEFAULT_VM_NAME="vm"
 
-# Check if jq command is installed, install if not
-if ! command -v jq >/dev/null; then
-  echo "jq command not found, installing..."
-  apt-get update && apt-get install -y jq
-fi
+# Use an associative array for default values
+declare -A defaults=(
+  [VM_ID]=1000
+  [VM_CORES]=2
+  [VM_MEM]=1024
+  [VM_DISK]="5G"
+  [STORAGE]="pool"
+  [VM_NAME]="vm"
+)
+
+# Function to prompt for user input with a default value
+prompt() {
+  local message="$1"
+  local default_value="$2"
+
+  read -p "${message} (default is ${default_value}): "
+  if [ -z "${REPLY}" ]; then
+    echo "${default_value}"
+  else
+    echo "${REPLY}"
+  fi
+}
+
+# Check for required dependencies
+for cmd in wget jq qm; do
+  if ! command -v $cmd >/dev/null; then
+    echo "Error: $cmd command not found."
+    echo "Please install $cmd and try again."
+    exit 1
+  fi
+done
 
 # Remote JSON file URL
 JSON_URL="https://raw.githubusercontent.com/Tomyail/pve-template-creator/main/image-list.json"
@@ -55,62 +74,19 @@ fi
 
 echo "Download complete: $LOCAL_PATH"
 
-# Prompt for VM ID, use default value if no input
-read -p "Enter VM ID (default is ${DEFAULT_VM_ID}): " VM_ID_INPUT
-if [ -z "$VM_ID_INPUT" ]; then
-    VM_ID=$DEFAULT_VM_ID
-else
-    VM_ID=$VM_ID_INPUT
-fi
 
-# Prompt for VM core count, use default value if no input
-read -p "Enter VM core count (default is ${DEFAULT_VM_CORES}): " VM_CORES_INPUT
-if [ -z "$VM_CORES_INPUT" ]; then
-    VM_CORES=$DEFAULT_VM_CORES
-else
-    VM_CORES=$VM_CORES_INPUT
-fi
+# Use a loop to handle multiple inputs
+for key in "${!defaults[@]}"; do
+  value=$(prompt "Enter $key" "${defaults[$key]}")
+  eval "$key=\$value"
+done
 
-# Prompt for VM memory size, use default value if no input
-read -p "Enter VM memory size in MB (default is ${DEFAULT_VM_MEM}): " VM_MEM_INPUT
-if [ -z "$VM_MEM_INPUT" ]; then
-    VM_MEM=$DEFAULT_VM_MEM
-else
-    VM_MEM=$VM_MEM_INPUT
-fi
-
-
-# Prompt for VM disk size, use default value if no input
-read -p "Enter VM disk size (default is ${DEFAULT_VM_DISK}): " VM_DISK_INPUT
-if [ -z "$VM_DISK_INPUT" ]; then
-    VM_DISK=$DEFAULT_VM_DISK
-else
-    VM_DISK=$VM_DISK_INPUT
-fi
-
-# Prompt for VM storage location, use default value if no input
-read -p "Enter VM storage location (default is ${DEFAULT_STORAGE}): " STORAGE_INPUT
-if [ -z "$STORAGE_INPUT" ]; then
-    STORAGE=$DEFAULT_STORAGE
-else
-    STORAGE=$STORAGE_INPUT
-fi
-
-# Prompt for VM name, use default value if no input
-read -p "Enter VM name (default is ${DEFAULT_VM_NAME}): " VM_NAME_INPUT
-if [ -z "$VM_NAME_INPUT" ]; then
-    VM_NAME=$DEFAULT_VM_NAME
-else
-    VM_NAME=$VM_NAME_INPUT
-fi
-
-# Output VM configuration
+# Output VM configuration using a loop
 echo "VM configuration is as follows:"
-echo "ID: $VM_ID"
-echo "Core count: $VM_CORES"
-echo "Memory size: $VM_MEM"
-echo "Disk size: $VM_DISK"
-echo "Storage location: $STORAGE"
+for key in "${!defaults[@]}"; do
+  value=$(eval "echo \$$key")
+  echo "$key: $value"
+done
 
 qm create $VM_ID --cores $VM_CORES --memory $VM_MEM --name $VM_NAME --net0 virtio,bridge=vmbr0
 qm importdisk $VM_ID $LOCAL_PATH $STORAGE
