@@ -26,7 +26,7 @@ prompt() {
 }
 
 # Check for required dependencies
-for cmd in wget jq qm; do
+for cmd in wget jq qm mkpasswd; do
   if ! command -v $cmd >/dev/null; then
     echo "Error: $cmd command not found."
     echo "Please install $cmd and try again."
